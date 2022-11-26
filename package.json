@@ -1,0 +1,45 @@
+{
+  "name": "solidity-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts coded with solidity language and hardhat platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "hardhat test --show-stack-traces",
+    "prettier": "prettier --write 'contracts/**/*.sol'",
+    "solhint": "solhint 'contracts/**/*.sol'",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shlyn/solidity-contracts.git"
+  },
+  "keywords": [
+    "Ethereum",
+    "Smart",
+    "contract",
+    "Solidity",
+    "Hardhat",
+    "Blockchain"
+  ],
+  "author": "shlyn.eth",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shlyn/solidity-contracts/issues"
+  },
+  "homepage": "https://github.com/shlyn/solidity-contracts#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^17.3.0",
+    "@commitlint/config-conventional": "^17.3.0",
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "dotenv": "^16.0.3",
+    "hardhat": "^2.12.2",
+    "husky": "^8.0.2",
+    "prettier": "^2.8.0",
+    "prettier-plugin-solidity": "^1.0.0",
+    "solhint": "^3.3.7"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.0",
+    "abdk-libraries-solidity": "^3.1.0"
+  }
+}

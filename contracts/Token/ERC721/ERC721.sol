@@ -453,6 +453,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
                     );
                 } else {
                     /// @solidity memory-safe-assembly
+                    // solhint-disable-next-line
                     assembly {
                         revert(add(32, reason), mload(reason))
                     }

@@ -15,6 +15,6 @@ contract BeCall {
     function setNum(uint256 number) external {
         require(number > 1, "BeCall: number value should large 1");
         sender = msg.sender;
-        num = number; 
+        num = number;
     }
 }

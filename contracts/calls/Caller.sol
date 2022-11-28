@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import "hardhat/console.sol";
 
 interface IBeCall {
-   function setNum(uint256 number) external; 
+    function setNum(uint256 number) external;
 }
 
 contract Caller {
@@ -17,13 +17,15 @@ contract Caller {
     }
 
     function callSetNum(address _becall, uint256 number) external {
-        IBeCall(_becall).setNum(number); 
-    //    (bool success,) = _becall.call(abi.encodeWithSignature("setNum(uint256)", number));
+        IBeCall(_becall).setNum(number);
+        //    (bool success,) = _becall.call(abi.encodeWithSignature("setNum(uint256)", number));
         // require(success, "Error: call failed");
     }
 
     function delegatecallSetNum(address _becall, uint256 number) external {
-        (bool success,) = _becall.delegatecall(abi.encodeWithSignature("setNum(uint256)", number));
+        (bool success, ) = _becall.delegatecall(
+            abi.encodeWithSignature("setNum(uint256)", number)
+        );
         require(success, "Error: delegatecall failed");
     }
 }

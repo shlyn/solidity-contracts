@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "hardhat/console.sol";
-
-contract BeCall {
+contract Logic {
     address public owner;
     uint256 public num;
     address public sender;

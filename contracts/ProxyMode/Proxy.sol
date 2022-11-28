@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "hardhat/console.sol";
-
-interface IBeCall {
+interface ILogic {
     function setNum(uint256 number) external;
 }
 
-contract Caller {
+contract Proxy {
     address public owner;
     uint256 public num;
     address public sender;
@@ -17,8 +15,8 @@ contract Caller {
     }
 
     function callSetNum(address _becall, uint256 number) external {
-        IBeCall(_becall).setNum(number);
-        //    (bool success,) = _becall.call(abi.encodeWithSignature("setNum(uint256)", number));
+        ILogic(_becall).setNum(number);
+        // (bool success,) = _becall.call(abi.encodeWithSignature("setNum(uint256)", number));
         // require(success, "Error: call failed");
     }
 

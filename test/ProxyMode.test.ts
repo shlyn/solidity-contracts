@@ -6,10 +6,10 @@ import { ethers } from "hardhat";
 describe("Call && DelegateCall", function () {
     async function deployContracts() {
         const [deployer1, deployer2, user1] = await ethers.getSigners();
-        const BeCall = await ethers.getContractFactory("BeCall");
+        const BeCall = await ethers.getContractFactory("Logic");
         const beCall = await BeCall.connect(deployer1).deploy();
 
-        const Caller = await ethers.getContractFactory("Caller");
+        const Caller = await ethers.getContractFactory("Proxy");
         const caller = await Caller.connect(deployer2).deploy();
 
         return { beCall, caller, deployer1, deployer2, user1 };
@@ -23,26 +23,26 @@ describe("Call && DelegateCall", function () {
         })
     })
 
-    describe("Call mode", function () {
-        it("Caller storage should not be changed", async function () {
+    describe("Proxy Call mode", function () {
+        it("Proxy storage should not be changed", async function () {
             const { beCall, caller, user1 } = await loadFixture(deployContracts);
             const tx = await caller.connect(user1).callSetNum(beCall.address, 10);
             await tx.wait();
             expect((await caller.num()).toString()).to.equal("0");
         })
-        it("BeCall storage should be changed", async function () {
+        it("Logic storage should be changed", async function () {
             const { beCall, caller, user1 } = await loadFixture(deployContracts);
             const tx = await caller.connect(user1).callSetNum(beCall.address, 10);
             await tx.wait();
             expect((await beCall.num()).toString()).to.equal("10");
         })
-        it("Caller sender should be AddressZero", async function () {
+        it("Proxy msg.sender should be AddressZero", async function () {
             const { beCall, caller, user1 } = await loadFixture(deployContracts);
             const tx = await caller.connect(user1).callSetNum(beCall.address, 10);
             await tx.wait();
             expect(await caller.sender()).to.equal(ethers.constants.AddressZero);
         })
-        it("BeCall sender should be Caller Contract address", async function () {
+        it("Logic msg.sender should be Caller Contract address", async function () {
             const { beCall, caller, user1 } = await loadFixture(deployContracts);
             const tx = await caller.connect(user1).callSetNum(beCall.address, 10);
             await tx.wait();
@@ -50,29 +50,29 @@ describe("Call && DelegateCall", function () {
         })
     });
 
-    describe("DelegateCall mode", function () {
-        it("Caller storage should be changed", async function () {
+    describe("Proxy DelegateCall mode", function () {
+        it("Proxy storage should be changed", async function () {
             const { beCall, caller, user1 } = await loadFixture(deployContracts);
             const tx = await caller.connect(user1).delegatecallSetNum(beCall.address, 100);
             await tx.wait();
             expect((await caller.num()).toString()).to.equal("100");
         })
 
-        it("BeCall storage should not be changed", async function () {
+        it("Logic storage should not be changed", async function () {
             const { beCall, caller, user1 } = await loadFixture(deployContracts);
             const tx = await caller.connect(user1).delegatecallSetNum(beCall.address, 100);
             await tx.wait();
             expect((await beCall.num()).toString()).to.equal("0");
         })
 
-        it("Caller sender should be user address", async function () {
+        it("Proxy msg.sender should be user address", async function () {
             const { beCall, caller, user1 } = await loadFixture(deployContracts);
             const tx = await caller.connect(user1).delegatecallSetNum(beCall.address, 100);
             await tx.wait();
             expect(await caller.sender()).to.equal(user1.address);
         })
 
-        it("BeCall sender should be AddressZero", async function () {
+        it("Logic msg.sender should be AddressZero", async function () {
             const { beCall, caller, user1 } = await loadFixture(deployContracts);
             const tx = await caller.connect(user1).delegatecallSetNum(beCall.address, 100);
             await tx.wait();

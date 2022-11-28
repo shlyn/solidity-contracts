@@ -42,7 +42,9 @@ contract XenBatchMint {
         require(counts > 0, "XenBatchMint: Illegal count");
         uint claimRanked = claimRank[msg.sender];
         uint claimMinted = claimMint[msg.sender];
-        uint claimMintPos = claimMinted + counts < claimRanked ? claimMinted + counts : claimRanked;
+        uint claimMintPos = claimMinted + counts < claimRanked
+            ? claimMinted + counts
+            : claimRanked;
 
         for (uint i = claimMinted + 1; i < claimMintPos + 1; i++) {
             address proxy = _proxyFor(msg.sender, i);

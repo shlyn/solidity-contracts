@@ -23,6 +23,7 @@ contract Caller {
     }
 
     function delegatecallSetNum(address _becall, uint256 number) external {
+        // solhint-disable-next-line
         (bool success, ) = _becall.delegatecall(
             abi.encodeWithSignature("setNum(uint256)", number)
         );

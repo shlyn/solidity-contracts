@@ -4,6 +4,7 @@
   "description": "Smart contracts coded with solidity language and hardhat platform",
   "main": "index.js",
   "scripts": {
+    "git:add": "git add .",
     "test": "hardhat test --show-stack-traces",
     "prettier": "prettier --write 'contracts/**/*.sol'",
     "solhint": "solhint 'contracts/**/*.sol'",

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "./interfaces/IXENCryptoMiniProxy.sol";
+import "./interfaces/IMiniProxy.sol";
 
 contract XenBatchMint {
     address public immutable xenProxy_;
@@ -33,7 +33,7 @@ contract XenBatchMint {
             assembly {
                 proxy := create2(0, add(bytecode, 32), mload(bytecode), salt)
             }
-            IXENCryptoMiniProxy(proxy).callClaimRank(term);
+            IMiniProxy(proxy).callClaimRank(term);
         }
         claimRank[msg.sender] += counts;
     }
@@ -48,7 +48,7 @@ contract XenBatchMint {
 
         for (uint i = claimMinted + 1; i < claimMintPos + 1; i++) {
             address proxy = _proxyFor(msg.sender, i);
-            IXENCryptoMiniProxy(proxy).callClaimMintRewardTo(msg.sender);
+            IMiniProxy(proxy).callClaimMintRewardTo(msg.sender);
         }
 
         claimMint[msg.sender] = claimMintPos;

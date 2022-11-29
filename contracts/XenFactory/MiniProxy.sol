@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "./interfaces/IXENCryptoMiniProxy.sol";
+import "./interfaces/IMiniProxy.sol";
 import "./interfaces/IXENCrypto.sol";
 
-contract XENCryptoMiniProxy is IXENCryptoMiniProxy {
+// XENCrypto mini proxy
+contract MiniProxy is IMiniProxy {
     address public constant XEN_CRYPTO =
         0xDd68332Fe8099c0CF3619cB3Bb0D8159EF1eCc93;
     address public constant XEN_BATCH_MINT =

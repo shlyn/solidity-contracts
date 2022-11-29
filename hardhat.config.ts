@@ -1,5 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@openzeppelin/hardhat-upgrades";
+import "@nomiclabs/hardhat-etherscan";
+import "hardhat-gas-reporter";
 import "@nomicfoundation/hardhat-toolbox";
 import * as dotenv from "dotenv";
 
@@ -96,6 +98,12 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: process.env.API_KEY_ETHERESCAN
+  },
+  gasReporter: {
+    enabled: false,
+    currency: 'CHF',
+    gasPrice: 10,
+    outputFile: './gasReport.txt'
   }
 };
 

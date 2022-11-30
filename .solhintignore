@@ -1,2 +1,6 @@
+# directory
 node_modules/
 open_projects/
+
+# file
+XENCrypto.sol

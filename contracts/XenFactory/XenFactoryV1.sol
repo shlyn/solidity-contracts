@@ -3,25 +3,23 @@ pragma solidity ^0.8.17;
 
 import "./interfaces/IMiniProxy.sol";
 
-contract XenBatchMint {
-    address public immutable xenProxy_;
-    // address private immutable _owner;
+contract XenFactoryV1 {
+    address public immutable miniProxy_;
 
     mapping(address => uint) public claimRank;
     mapping(address => uint) public claimMint;
 
-    constructor(address xenProxy) {
-        require(xenProxy != address(0), "XenBatchMint: Illegal address");
-        xenProxy_ = xenProxy;
-        // _owner = msg.sender;
+    constructor(address _miniProxy) {
+        require(_miniProxy != address(0), "Illegal address");
+        miniProxy_ = _miniProxy;
     }
 
     function batchClaimRank(uint counts, uint term) external {
-        require(counts > 0, "XenBatchMint: Illegal count");
-        require(term > 0, "XenBatchMint: Illegal term");
+        require(counts > 0, "Illegal count");
+        require(term > 0, "Illegal term");
         bytes memory bytecode = bytes.concat(
             bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
-            bytes20(address(xenProxy_)),
+            bytes20(address(miniProxy_)),
             bytes15(0x5af43d82803e903d91602b57fd5bf3)
         );
         address proxy;
@@ -39,7 +37,7 @@ contract XenBatchMint {
     }
 
     function batchClaimMintRewardTo(uint counts) external {
-        require(counts > 0, "XenBatchMint: Illegal count");
+        require(counts > 0, "Illegal count");
         uint claimRanked = claimRank[msg.sender];
         uint claimMinted = claimMint[msg.sender];
         uint claimMintPos = claimMinted + counts < claimRanked
@@ -59,6 +57,11 @@ contract XenBatchMint {
         uint i
     ) private view returns (address proxy) {
         bytes32 salt = keccak256(abi.encodePacked(sender, i));
+        bytes memory bytecode = bytes.concat(
+            bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
+            bytes20(address(miniProxy_)),
+            bytes15(0x5af43d82803e903d91602b57fd5bf3)
+        );
         proxy = address(
             uint160(
                 uint(
@@ -67,7 +70,7 @@ contract XenBatchMint {
                             hex"ff",
                             address(this),
                             salt,
-                            keccak256(abi.encodePacked(xenProxy_))
+                            keccak256(abi.encodePacked(bytecode))
                         )
                     )
                 )

@@ -6,7 +6,6 @@ import "./MinerStorage.sol";
 // import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 // import "@openzeppelin/contracts/access/Ownable.sol";
 
-// contract Miner is MinerStorage, Ownable, Initializable {
 contract Miner is MinerStorage {
     receive() external payable {
         memberFee += msg.value;

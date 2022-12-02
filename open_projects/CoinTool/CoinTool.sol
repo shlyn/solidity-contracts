@@ -19,22 +19,9 @@ contract CoinTool_App {
     receive() external payable {}
     fallback() external payable{}
 
-    // @MY
-    // function callClaimRank(uint256 term) external {
-        // require(msg.sender == _original, "unauthorized");
-        // bytes memory callData = abi.encodeWithSignature("claimRank(uint256)", term);
-        // (bool success, ) = address(xenCrypto).call(callData);
-        // require(success, "call failed");
-    // }
-
     function t(uint256 total,bytes memory data,bytes calldata _salt) external payable {
         require(msg.sender == tx.origin);
         bytes memory bytecode = bytes.concat(bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73), bytes20(address(this)), bytes15(0x5af43d82803e903d91602b57fd5bf3));
-
-        // @MY
-        // uint256 term = 10;
-        // bytes memory callData = abi.encodeWithSignature("callClaimRank(uint256)", term);
-
         uint256 i = map[msg.sender][_salt]+1;
         uint256 end = total+i;
         for (i; i < end;++i) {
@@ -42,8 +29,6 @@ contract CoinTool_App {
 			assembly {
 	            let proxy := create2(0, add(bytecode, 32), mload(bytecode), salt)
                 let succeeded := call(gas(), proxy, 0, add(data, 0x20), mload(data), 0, 0)
-                // @MY
-                // let succeeded := call(gas(), proxy, 0, add(callData, 0x20), mload(callData), 0, 0)
 			}
         }
         map[msg.sender][_salt] += total;
@@ -125,3 +110,9 @@ contract CoinTool_App {
         erc20token.transfer(owner, balance);
     }
 }
+
+// 0x59635f6f00000000000000000000000006450dee7fd2fb8e39061434babcfc05599a6fb8000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000441c560305000000000000000000000000f3b60C1d342b964e5aBa270741AA56e2C22b47BC000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000
+// 0x51F92552B230e7Ea3dd4591D4704b5083d1f3C10
+// 06450dee7fd2fb8e39061434babcfc05599a6fb8
+// f3b60c1d342b964e5aba270741aa56e2c22b47bc
+// 0x59635f6f00000000000000000000000006450dee7fd2fb8e39061434babcfc05599a6fb8000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000441c560305000000000000000000000000f3b60c1d342b964e5aba270741aa56e2c22b47bc000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000

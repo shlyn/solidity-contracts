@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-interface MinerTypes {
+interface MinerType {
     // INTERNAL TYPE TO DESCRIBE MINT TASK CONFIG INFO
     struct MintInfo {
         address member;

@@ -13,7 +13,7 @@ export const DeployedContractAddress = {
         Quotes: "0x9db9f78fFe9F83d70B577d6079B1Cc8b26bc6bC0",
         XENFT: "0xe57f6b2c8c294fF2F72cAD68f852919eC783c126", // official v1
 
-        CoinTool: "",
+        CoinTool: "0x1E2c88750DAb72aBEC424e7d0915748f4B8e2152",
         MyCoinTool: "0xca7c25879997ed70841c9081b385859643b8bb9a",
 
         // XenAssistant: "0xAe88a614733Db391CaA8DB63e10c853a2A6c46F2"

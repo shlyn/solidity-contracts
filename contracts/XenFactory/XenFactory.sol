@@ -1,79 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "../interfaces/XenFactory/BulkType.sol";
 import "../interfaces/XenFactory/IMiniProxy.sol";
 
-contract XenFactory is BulkType {
+contract XenFactory {
+    // @TODO:
     address public constant MINI_PROXY =
-        0xDd68332Fe8099c0CF3619cB3Bb0D8159EF1eCc93;
-    address public constant MINER = 0xDd68332Fe8099c0CF3619cB3Bb0D8159EF1eCc93;
+        0x3176A1200B2c00F50E3C648597508CB784aE021F;
 
-    mapping(address => uint256) public userBulkAmount;
-    // (address => (bulkId => bulkInfo))
-    mapping(address => mapping(uint256 => BulkInfo)) public bulkInfo;
+    mapping(address => uint256) public userMintIndex;
 
-    event MinerBulkClaimRank(
-        address indexed user,
-        uint256 batchId,
-        uint256 count,
-        uint256 term
-    );
-    event MinerBulkClaimMintReward(address indexed user, uint256 batchId);
-
-    modifier onlyMiner() {
-        require(msg.sender == MINER, "unauthorized");
-        _;
-    }
-
-    function bulkClaimRank(uint256 term, uint256 count) external {
-        require(tx.origin == msg.sender, "Only EOA");
-        _bulkClaimRank(msg.sender, count, term);
-    }
-
-    function bulkClaimMint(uint256 batchId) external {
-        require(tx.origin == msg.sender, "Only EOA");
-        _bulkMintReward(msg.sender, batchId);
-    }
-
-    function minerBulkClaimRank(
-        address user,
-        uint256 term,
-        uint256 count
-    ) external onlyMiner returns (uint256 bulkId) {
-        bulkId = _bulkClaimRank(user, count, term);
-    }
-
-    function minerBulkClaimMint(
-        address user,
-        uint256 batchId
-    ) external onlyMiner {
-        _bulkMintReward(user, batchId);
-    }
-
-    function _bulkClaimRank(
-        address user,
-        uint256 count,
-        uint256 term
-    ) private returns (uint256 bulkId) {
-        require(count > 0 && count < 101, "Count value not be support");
-        require(term > 0, "Illedge term");
-        bulkId = ++userBulkAmount[user];
-        bulkInfo[user][bulkId] = BulkInfo(
-            bulkId,
-            count,
-            false,
-            block.timestamp + term * 3600 * 24
-        );
+    function multiMint(uint256 term, uint256 count) external {
+        require(tx.origin == msg.sender, "Error: Only EOA");
+        require(count > 0, "Invalid count");
+        require(term > 0, "Invalid term");
         bytes memory bytecode = bytes.concat(
             bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
             bytes20(MINI_PROXY),
             bytes15(0x5af43d82803e903d91602b57fd5bf3)
         );
+        uint256 mintIndex = userMintIndex[msg.sender] + 1;
+        userMintIndex[msg.sender] += count;
         address proxy;
-        for (uint256 i = 1; i < count; ) {
-            bytes32 salt = keccak256(abi.encodePacked(user, bulkId, i));
-            // solhint-disable-next-line
+        for (uint256 i = mintIndex; i < count + 1; ) {
+            bytes32 salt = keccak256(abi.encodePacked(msg.sender, i));
             assembly {
                 proxy := create2(0, add(bytecode, 32), mload(bytecode), salt)
             }
@@ -82,26 +32,11 @@ contract XenFactory is BulkType {
                 i++;
             }
         }
-        emit MinerBulkClaimRank(user, bulkId, count, term);
     }
 
-    function _bulkMintReward(address user, uint256 batchId) private {
-        require(user != address(0), "Illedge user");
-        require(
-            batchId > 0 && batchId <= userBulkAmount[user],
-            "Invalid batchId"
-        );
-
-        BulkInfo memory info = bulkInfo[user][batchId];
-        require(!info.claimed, "Bulk is claimed already");
-        require(
-            // solhint-disable-next-line
-            block.timestamp >= info.unlockTime,
-            "Unlock time has not yet arrived"
-        );
-
-        info.claimed = true;
-        bulkInfo[user][batchId] = info;
+    function multiReuseMint(uint256[] calldata ids, uint256 term) external {
+        require(tx.origin == msg.sender, "Error: Only EOA");
+        require(term > 0, "Invalid term");
         bytes32 bytecodeHash = keccak256(
             abi.encodePacked(
                 bytes.concat(
@@ -111,8 +46,8 @@ contract XenFactory is BulkType {
                 )
             )
         );
-        for (uint256 i = 1; i < info.volume; ) {
-            bytes32 salt = keccak256(abi.encodePacked(user, batchId, i));
+        for (uint256 i = 0; i < ids.length; ) {
+            bytes32 salt = keccak256(abi.encodePacked(msg.sender, ids[i]));
             address proxy = address(
                 uint160(
                     uint(
@@ -127,11 +62,44 @@ contract XenFactory is BulkType {
                     )
                 )
             );
-            IMiniProxy(proxy).callClaimMintRewardTo(user);
+            IMiniProxy(proxy).callClaimRank(term);
             unchecked {
                 i++;
             }
         }
-        emit MinerBulkClaimMintReward(user, batchId);
+    }
+
+    function multiClaim(uint256[] calldata ids) external {
+        require(tx.origin == msg.sender, "Error: Only EOA");
+        bytes32 bytecodeHash = keccak256(
+            abi.encodePacked(
+                bytes.concat(
+                    bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
+                    bytes20(MINI_PROXY),
+                    bytes15(0x5af43d82803e903d91602b57fd5bf3)
+                )
+            )
+        );
+        for (uint256 i = 0; i < ids.length; ) {
+            bytes32 salt = keccak256(abi.encodePacked(msg.sender, ids[i]));
+            address proxy = address(
+                uint160(
+                    uint(
+                        keccak256(
+                            abi.encodePacked(
+                                hex"ff",
+                                address(this),
+                                salt,
+                                bytecodeHash
+                            )
+                        )
+                    )
+                )
+            );
+            IMiniProxy(proxy).callClaimMintRewardTo(msg.sender);
+            unchecked {
+                i++;
+            }
+        }
     }
 }

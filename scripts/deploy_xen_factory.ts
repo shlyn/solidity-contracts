@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 
-const deployMiniProxy = async () => {
+const _deployMiniProxy = async () => {
   const Contract = await ethers.getContractFactory("MiniProxy");
   const contract = await Contract.deploy();
 
@@ -8,7 +8,7 @@ const deployMiniProxy = async () => {
   console.log(`MiniProxy deployed to ${contract.address}`);
 }
 
-const deployXenFactory = async () => {
+const _deployXenFactory = async () => {
   const Contract = await ethers.getContractFactory("XenFactory");
   const contract = await Contract.deploy();
 
@@ -17,8 +17,8 @@ const deployXenFactory = async () => {
 }
 
 async function main() {
-    await deployMiniProxy()
-    await deployXenFactory()
+    // await _deployMiniProxy()
+    // await _deployXenFactory()
 }
 
 main().catch((error) => {

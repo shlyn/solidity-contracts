@@ -15,29 +15,32 @@ import "../interfaces/XenFactory/IXENCrypto.sol";
  *
  */
 contract MiniProxy is IMiniProxy {
-    address public constant XEN_CRYPTO =
-        0xDd68332Fe8099c0CF3619cB3Bb0D8159EF1eCc93;
-    address public constant XEN_FACTORY =
-        0x271fF3bEB4859973422e3E04De1f25dAA1757A23;
-    address public immutable origin;
+    address constant _XEN_CRYPTO = 0xDd68332Fe8099c0CF3619cB3Bb0D8159EF1eCc93;
+    address immutable _owner;
+    address private _factory;
 
     constructor() {
-        origin = address(this);
+        _owner = msg.sender;
+    }
+
+    function setFactory(address factory_) external {
+        require(msg.sender == _owner, "MiniProxy: unauthorized");
+        require(factory_ != address(0), "MiniProxy: invalid factory");
+        _factory = factory_;
     }
 
     function callClaimRank(uint256 term) external {
-        require(msg.sender == XEN_FACTORY, "MiniProxy: only xen factory.");
-        IXENCrypto(XEN_CRYPTO).claimRank(term);
+        require(msg.sender == _factory, "MiniProxy: only factory.");
+        IXENCrypto(_XEN_CRYPTO).claimRank(term);
     }
 
     function callClaimMintRewardTo(address to) external {
-        require(msg.sender == XEN_FACTORY, "MiniProxy: only xen factory.");
-        IXENCrypto(XEN_CRYPTO).claimMintRewardAndShare(to, uint256(100));
+        require(msg.sender == _factory, "MiniProxy: only factory.");
+        IXENCrypto(_XEN_CRYPTO).claimMintRewardAndShare(to, uint256(100));
     }
 
     function destroy(address receiver) external {
-        require(origin != address(this), "MiniProxy: unauthorized");
-        require(msg.sender == XEN_FACTORY, "MiniProxy: only xen factory.");
+        require(msg.sender == _factory, "MiniProxy: only factory.");
         selfdestruct(payable(receiver));
     }
 }

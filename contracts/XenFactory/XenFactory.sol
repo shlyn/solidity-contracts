@@ -19,10 +19,10 @@ contract XenFactory {
             bytes20(MINI_PROXY),
             bytes15(0x5af43d82803e903d91602b57fd5bf3)
         );
-        uint256 mintIndex = userMintIndex[msg.sender] + 1;
+        uint256 startIndex = userMintIndex[msg.sender] + 1;
         userMintIndex[msg.sender] += count;
         address proxy;
-        for (uint256 i = mintIndex; i < count + 1; ) {
+        for (uint256 i = startIndex; i < startIndex + count; ) {
             bytes32 salt = keccak256(abi.encodePacked(msg.sender, i));
             assembly {
                 proxy := create2(0, add(bytecode, 32), mload(bytecode), salt)

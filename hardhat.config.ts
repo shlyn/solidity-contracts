@@ -8,7 +8,7 @@ import * as dotenv from "dotenv";
 dotenv.config()
 
 const config: HardhatUserConfig = {
-  defaultNetwork: "hardhat",
+  // defaultNetwork: "hardhat",
   networks: {
     dashboard: {
       url: "http://localhost:24012/rpc",
@@ -100,10 +100,9 @@ const config: HardhatUserConfig = {
     apiKey: process.env.API_KEY_ETHERESCAN
   },
   gasReporter: {
-    enabled: false,
+    enabled: true,
     currency: 'CHF',
-    gasPrice: 10,
-    outputFile: './gasReport.txt'
+    gasPrice: 10
   }
 };
 

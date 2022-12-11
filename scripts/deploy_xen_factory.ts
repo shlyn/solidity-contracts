@@ -18,7 +18,7 @@ const _deployXenFactory = async () => {
 
 async function main() {
     // await _deployMiniProxy()
-    // await _deployXenFactory()
+    await _deployXenFactory()
 }
 
 main().catch((error) => {

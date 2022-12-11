@@ -4,20 +4,10 @@ pragma solidity ^0.8.17;
 import "../interfaces/XenFactory/IMiniProxy.sol";
 import "../interfaces/XenFactory/IXENCrypto.sol";
 
-/**
- * XEN_CRYPTO:
- * mainnet:
- * goerli: 0xDd68332Fe8099c0CF3619cB3Bb0D8159EF1eCc93
- *
- * XEN_FACTORY:
- * mainnet:
- * goerli:
- *
- */
 contract MiniProxy is IMiniProxy {
     address constant _XEN_CRYPTO = 0xDd68332Fe8099c0CF3619cB3Bb0D8159EF1eCc93;
     address immutable _owner;
-    address private _factory;
+    address _factory;
 
     constructor() {
         _owner = msg.sender;

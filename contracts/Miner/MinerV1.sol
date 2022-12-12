@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "../utils/TransferHelper.sol";
 // import "../interfaces/Miner/MinerType.sol";
 import "../interfaces/Miner/IXenFactory.sol";
-import "../interfaces/XenFactory/BulkType.sol";
+import "../interfaces/xen-batch/BulkType.sol";
 
 contract MinerV1 is OwnableUpgradeable, TransferHelper {
     // INTERNAL TYPE TO DESCRIBE MINT TASK CONFIG INFO

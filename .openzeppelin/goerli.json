@@ -1,0 +1,47 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x4f45d7d2dF7b4C1FBA77248b2b7d7C9c891EF2F4",
+    "txHash": "0x13ee42b1aebd68c246e89293ceb891ee0ccd4c9821db60a82fd7f8834f28a6a5"
+  },
+  "proxies": [
+    {
+      "address": "0x5eF4f26916A7093302eCA7a922fFa07231a914E6",
+      "txHash": "0x641ec3609a5f19e9eb5372c38bbbc4d95dca0bbd1906f4c98059443d9b015cb4",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "9fd58351b2bf2af773bbb30a4fe229715ba15aa19682ca7975b68f895b6f5e05": {
+      "address": "0x26dA424f04e1392F93fBfA77F1AD687F8e079192",
+      "txHash": "0x1f653846500e2c74b6f0eeadbcbf22de6317a4f4e7e91c47e94c0fe2ab9bfa52",
+      "layout": {
+        "solcVersion": "0.8.17",
+        "storage": [
+          {
+            "label": "userMintIndex",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "XENFactory",
+            "src": "contracts/XEN-batch/XENFactory.sol:49"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    }
+  }
+}

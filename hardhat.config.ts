@@ -12,7 +12,8 @@ const config: HardhatUserConfig = {
   networks: {
     dashboard: {
       url: "http://localhost:24012/rpc",
-      timeout: 56000,
+      timeout: 56000000,
+      gasPrice: 10_000_000_000,
       allowUnlimitedContractSize: true
     },
     hardhat: {

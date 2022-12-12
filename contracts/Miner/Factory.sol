@@ -2,8 +2,8 @@
 pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "../interfaces/XenFactory/BulkType.sol";
-import "../interfaces/XenFactory/IMiniProxy.sol";
+import "../interfaces/xen-batch/BulkType.sol";
+import "../interfaces/xen-batch/IMiniProxy.sol";
 
 contract Factory is OwnableUpgradeable, BulkType {
     // @TODO:

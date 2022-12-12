@@ -1,20 +1,20 @@
 {
   "manifestVersion": "3.2",
   "admin": {
-    "address": "0x4f45d7d2dF7b4C1FBA77248b2b7d7C9c891EF2F4",
-    "txHash": "0x13ee42b1aebd68c246e89293ceb891ee0ccd4c9821db60a82fd7f8834f28a6a5"
+    "address": "0x9756B99BF162B8FD67092E39BEDE79F663260E44",
+    "txHash": "0x25fb35977c6aec895acf9dc02eb9a5e25abb12e8201730622bec9155e6f8c186"
   },
   "proxies": [
     {
-      "address": "0x5eF4f26916A7093302eCA7a922fFa07231a914E6",
-      "txHash": "0x641ec3609a5f19e9eb5372c38bbbc4d95dca0bbd1906f4c98059443d9b015cb4",
+      "address": "0x39CBC7985fC8563C30eB98306B18Bdb96C5dB1bF",
+      "txHash": "0xf9a248327327d77754e6acb7696b1bf823240fdf2de077afd73150ec88086cc5",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "9fd58351b2bf2af773bbb30a4fe229715ba15aa19682ca7975b68f895b6f5e05": {
-      "address": "0x26dA424f04e1392F93fBfA77F1AD687F8e079192",
-      "txHash": "0x1f653846500e2c74b6f0eeadbcbf22de6317a4f4e7e91c47e94c0fe2ab9bfa52",
+    "91eeafb97d368432fcbb6994fddc4fa6321a9dcfb1e0a95b2f20bda616a712a4": {
+      "address": "0xa5e6a194635A956d2cBa837ab30ab9d1Ff62f607",
+      "txHash": "0x0074abff6cb82f96596fe04c43bddeb01720cad6f5d0a951838acc6bc526f906",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -24,7 +24,7 @@
             "slot": "0",
             "type": "t_mapping(t_address,t_uint256)",
             "contract": "XENFactory",
-            "src": "contracts/XEN-batch/XENFactory.sol:49"
+            "src": "contracts/XEN-batch/XENFactory.sol:45"
           }
         ],
         "types": {

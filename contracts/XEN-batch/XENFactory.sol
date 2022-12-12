@@ -14,16 +14,10 @@ interface IXENProxy {
 }
 
 contract XENProxy is IXENProxy {
-    address immutable _owner;
-    address public factory;
-    address public xenCrypto;
+    address public immutable factory;
+    address public immutable xenCrypto;
 
-    constructor() {
-        _owner = msg.sender;
-    }
-
-    function setProxy(address factory_, address xenCrypto_) external {
-        require(msg.sender == _owner, "MiniProxy: unauthorized");
+    constructor(address factory_, address xenCrypto_) {
         factory = factory_;
         xenCrypto = xenCrypto_;
     }
@@ -47,7 +41,7 @@ contract XENProxy is IXENProxy {
 contract XENFactory {
     // @TODO:
     address public constant XEN_PROXY =
-        0x94Ffb07ADE61F17F93d56A283130FcA66B290234;
+        0xFE86E8b070ab4E478FB17CD8648780A6232B763A;
 
     mapping(address => uint256) public userMintIndex;
 

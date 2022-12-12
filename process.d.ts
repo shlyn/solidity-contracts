@@ -3,7 +3,8 @@ declare module "process" {
   global {
     namespace NodeJS {
       interface ProcessEnv extends Dict<string> {
-        MAINNET_OR_TEST: "TEST" | "MAINNET";
+        MAINNET_OR_TEST: "TEST"|"MAINNET";
+        GAS_REPORT: "0"|"1";
         DEPLOYER_PRIVEKEY: string;
         TEST_PRIVEKEY: string;
 

@@ -101,7 +101,7 @@ const config: HardhatUserConfig = {
     apiKey: process.env.API_KEY_ETHERESCAN
   },
   gasReporter: {
-    enabled: true,
+    enabled: process.env.GAS_REPORT == "1",
     currency: 'CHF',
     gasPrice: 10
   }

@@ -24,7 +24,7 @@
             "slot": "0",
             "type": "t_mapping(t_address,t_uint256)",
             "contract": "XENFactory",
-            "src": "contracts/XEN-batch/XENFactory.sol:45"
+            "src": "contracts/XEN-batch/XENFactory.sol:11"
           }
         ],
         "types": {

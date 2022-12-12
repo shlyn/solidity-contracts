@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "./IXENProxy.sol";
 
-contract XENFactory {
+contract XENFactoryV2 {
     // @TODO:
     address public constant XEN_PROXY =
         0xFE86E8b070ab4E478FB17CD8648780A6232B763A;
@@ -12,8 +12,6 @@ contract XENFactory {
 
     function batchMint(uint256 term, uint256 count) external {
         require(tx.origin == msg.sender, "Error: Only EOA");
-        require(count > 0, "Invalid count");
-        require(term > 0, "Invalid term");
         bytes memory bytecode = bytes.concat(
             bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
             bytes20(XEN_PROXY),

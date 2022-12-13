@@ -148,6 +148,7 @@ describe("XENFacroty", function () {
       // claim
       const res22 = await xenFactory.connect(wallet2).batchClaim(Array.from({ length: count }, (v, k) => k + 1));
       await res22.wait();
+
       const balance2 = await xenCrypto.balanceOf(wallet2.address);
 
       expect(parseInt(totalRewards + '') - parseInt(ethers.utils.formatEther(balance2))).to.lt(50);
@@ -177,7 +178,7 @@ describe("XENFacroty", function () {
         expect(mintInfo.rank.toNumber()).to.equal(0);
       }
 
-      const res3 = await xenFactory.connect(wallet4).multiReuseMint(Array.from({ length: 100 }, (v, k) => k + 1), 1);
+      const res3 = await xenFactory.connect(wallet4).batchReuseMint(Array.from({ length: 100 }, (v, k) => k + 1), 1);
       await res3.wait();
 
       for (let i = 1; i < count + 1; i++) {
@@ -188,7 +189,7 @@ describe("XENFacroty", function () {
     });
 
     it("批量提取 + 复用", async function () {
-      const { xenCrypto, xenFactory, xenProxy, wallet4 } = await loadFixture(deployTargetContract);
+      const { xenCrypto, xenFactory, xenProxy, wallet3, wallet4 } = await loadFixture(deployTargetContract);
 
       let count = 100;
       const res = await xenFactory.connect(wallet4).batchMint(1, count);
@@ -197,17 +198,55 @@ describe("XENFacroty", function () {
       for (let i = 1; i < count + 1; i++) {
         const proxy = getCreate2ContractAddress(xenFactory.address, xenProxy.address, wallet4.address, i);
         const mintInfo = await xenCrypto.userMints(proxy);
-        expect(mintInfo.rank.toNumber()).to.gt(0);
+        expect(mintInfo.rank.toNumber()).to.equal(i);
       }
 
-      const res2 = await xenFactory.connect(wallet4).batchClaimAndReuse(Array.from({ length: count }, (v, k) => k + 1), 1);
+      const res2 = await xenFactory.connect(wallet4).batchClaimAndMint(Array.from({ length: count }, (v, k) => k + 1), 1);
       await res2.wait();
+
+      const balance2 = await xenCrypto.balanceOf(wallet4.address);
+      console.log(ethers.utils.formatEther(balance2))
 
       for (let i = 1; i < count + 1; i++) {
         const proxy = getCreate2ContractAddress(xenFactory.address, xenProxy.address, wallet4.address, i);
         const mintInfo = await xenCrypto.userMints(proxy);
-        expect(mintInfo.rank.toNumber()).to.gt(0);
+        expect(mintInfo.rank.toNumber()).to.equal(i + 100);
       }
+    });
+
+    it("对比: 批量提取 + 复用", async function () {
+      const { xenCrypto, xenFactory, xenProxy, wallet3 } = await loadFixture(deployTargetContract);
+
+      let count = 100;
+      const res3 = await xenFactory.connect(wallet3).batchMint(1, count);
+      await res3.wait();
+
+      const getRewards = async (deployer: string, template: string, user: string) => {
+        let rewards = 0;
+        const globalRank = (await xenCrypto.globalRank()).toNumber();
+        const counts = await xenFactory.userMintIndex(wallet3.address);
+        for (let i = 1; i < counts.toNumber() + 1; i++) {
+          let proxy = getCreate2ContractAddress(deployer, template, user, i);
+          const mintInfo2 = await xenCrypto.userMints(proxy);
+          const itemBase = {
+            rank: mintInfo2.rank.toNumber(),
+            term: mintInfo2.term.toNumber(),
+            amplifier: mintInfo2.amplifier.toNumber(),
+            eaaRate: mintInfo2.eaaRate.toNumber()
+          }
+          const rankDiffLog = Number(Math.log2(globalRank - itemBase.rank).toFixed(4));
+          const penalty = 1;
+          rewards += rankDiffLog * itemBase.term * itemBase.amplifier * (1 + itemBase.eaaRate / 1000) * penalty;
+        }
+        return rewards;
+      }
+      const totalRewards = await getRewards(xenFactory.address, xenProxy.address, wallet3.address);
+      console.log(totalRewards);
+
+      const res33 = await xenFactory.connect(wallet3).batchClaim(Array.from({ length: count }, (v, k) => k + 1));
+      await res33.wait()
+      const balance3 = await xenCrypto.balanceOf(wallet3.address);
+      console.log(ethers.utils.formatEther(balance3))
     });
   });
 });

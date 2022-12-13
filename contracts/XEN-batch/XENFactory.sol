@@ -83,7 +83,7 @@ contract XENFactory {
         }
     }
 
-    function multiReuseMint(uint256[] calldata ids, uint256 term) external {
+    function batchReuseMint(uint256[] calldata ids, uint256 term) external {
         require(tx.origin == msg.sender, "Error: Only EOA");
         require(term > 0, "Invalid term");
         bytes32 bytecodeHash = keccak256(
@@ -152,7 +152,7 @@ contract XENFactory {
         }
     }
 
-    function batchClaimAndReuse(uint256[] calldata ids, uint256 term) external {
+    function batchClaimAndMint(uint256[] calldata ids, uint256 term) external {
         require(tx.origin == msg.sender, "Error: Only EOA");
         bytes32 bytecodeHash = keccak256(
             abi.encodePacked(

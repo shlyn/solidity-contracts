@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "./IXENCrypto.sol";
-import "./IXENProxy.sol";
+import "./interfaces/IXENCrypto.sol";
+import "./interfaces/IXENProxy.sol";
 
 contract XENProxy is IXENProxy {
     address public immutable factory;
@@ -13,9 +13,36 @@ contract XENProxy is IXENProxy {
         xenCrypto = xenCrypto_;
     }
 
+    function callClaimRank(address _xenCrypto, uint256 term) external {
+        require(msg.sender == factory, "MiniProxy: only factory.");
+        IXENCrypto(_xenCrypto).claimRank(term);
+    }
+
+    function callClaimMintRewardTo(address _xenCrypto, address to) external {
+        require(msg.sender == factory, "MiniProxy: only factory.");
+        IXENCrypto(_xenCrypto).claimMintRewardAndShare(to, uint256(100));
+    }
+
     function callClaimRank(uint256 term) external {
         require(msg.sender == factory, "MiniProxy: only factory.");
         IXENCrypto(xenCrypto).claimRank(term);
+    }
+
+    function callXEN(bytes memory data) external {
+        require(msg.sender == factory, "invalid caller");
+        address xenAddress = xenCrypto;
+        assembly {
+            // solhint-disable-next-line
+            let succeeded := call(
+                gas(),
+                xenAddress,
+                0,
+                add(data, 0x20),
+                mload(data),
+                0,
+                0
+            )
+        }
     }
 
     function callClaimMintRewardTo(address to) external {

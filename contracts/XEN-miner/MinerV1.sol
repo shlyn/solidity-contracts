@@ -4,8 +4,7 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 
-import "../utils/TransferHelper.sol";
-// import "../interfaces/Miner/MinerType.sol";
+import "./utils/TransferHelper.sol";
 import "../interfaces/Miner/IXenFactory.sol";
 import "../interfaces/xen-batch/BulkType.sol";
 

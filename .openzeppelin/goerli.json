@@ -1,20 +1,20 @@
 {
   "manifestVersion": "3.2",
   "admin": {
-    "address": "0x64b94684e429BDd32834d14E0619797e4ad1C6ec",
-    "txHash": "0x09bcbb468e4cfbeb505c7a7a89c2aa45d8d048435b964c8bc90613fa4de0a4a5"
+    "address": "0x38f327734ED06edc60322961F872912685daa7A4",
+    "txHash": "0x50941e379492227ed29d1e56f53ed6fc2a02760620570e570f4d2a0a47707bc9"
   },
   "proxies": [
     {
-      "address": "0xc3A2310328Fcd9Bc6D5c8AC3A97C2aC64bD3D9ab",
-      "txHash": "0x3da26d5899db86e2a4099632df0a8f91b0463339128a0b5bf2cfad19096e6e74",
+      "address": "0xA3d29784d8A8CD7e8099115f782942669f7bC314",
+      "txHash": "0x976db3a31a800803594247b33ab0ded9d06e7d79f755f6563cd7c8f89d822a03",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "7990c1620ea287282aa35b443c9f336afd6bc45edf2e56710aa0127211ac6752": {
-      "address": "0xf697DBea6b621989C45A72D08Ed7fD1BD4f10b94",
-      "txHash": "0x93ea9598b9b4dd279aa89aeaa6579e70c3fc65717c580cf0bb3adb5c011d1793",
+    "43e0be0a39bb0804d1e8ebc052eb3b9d89c894d1cd317a3bc35893e2ba715c71": {
+      "address": "0xBF2Be15873445136a13a6A7187EE01A014068cDd",
+      "txHash": "0x4a993ffd343da7be8868f8fd480f97a7e6a095fa1ac7111f73106675ddbd452a",
       "layout": {
         "solcVersion": "0.8.17",
         "storage": [
@@ -65,7 +65,7 @@
             "slot": "101",
             "type": "t_bytes32",
             "contract": "XENFactory",
-            "src": "contracts/XEN-batch/XENFactory.sol:37"
+            "src": "contracts/XEN-batch/XENFactory.sol:43"
           },
           {
             "label": "proxyImplementation",
@@ -73,7 +73,7 @@
             "slot": "102",
             "type": "t_address",
             "contract": "XENFactory",
-            "src": "contracts/XEN-batch/XENFactory.sol:38"
+            "src": "contracts/XEN-batch/XENFactory.sol:44"
           },
           {
             "label": "userMintIndex",
@@ -81,7 +81,7 @@
             "slot": "103",
             "type": "t_mapping(t_address,t_uint256)",
             "contract": "XENFactory",
-            "src": "contracts/XEN-batch/XENFactory.sol:40"
+            "src": "contracts/XEN-batch/XENFactory.sol:46"
           }
         ],
         "types": {

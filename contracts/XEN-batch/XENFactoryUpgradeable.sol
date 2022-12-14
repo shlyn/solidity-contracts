@@ -1,35 +1,33 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-/// @title XENCrypto manual batch mint and claim contract
-/// @author Forrest.liu
-/// @notice You can use this contact to batch mint XENCrypto token
-/// @dev All function calls
-contract XENFactory {
-    address public immutable owner;
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+
+contract XENFactoryUpgradeable is OwnableUpgradeable {
+    bytes32 public bytecodeHash;
     address public proxyImplementation;
 
     mapping(address => uint256) public userMintIndex;
 
-    constructor() {
-        owner = tx.origin;
+    function initialize() external initializer {
+        __Ownable_init();
     }
 
-    receive() external payable {}
-
-    /// @dev set proxy implementation contact address
-    /// @param _proxyImplementation The address of XENProxyImplementation
-    function setFactory(address _proxyImplementation) external {
-        require(owner == msg.sender, "noauthority");
+    function setFactory(address _proxyImplementation) external onlyOwner {
         proxyImplementation = _proxyImplementation;
+        bytecodeHash = keccak256(
+            abi.encodePacked(
+                bytes.concat(
+                    bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
+                    bytes20(_proxyImplementation),
+                    bytes15(0x5af43d82803e903d91602b57fd5bf3)
+                )
+            )
+        );
     }
 
     // batch create Proxy contract
 
-    /// @notice
-    /// @dev
-    /// @param term The number of days to mint
-    /// @param count The number of proxy contract
     function batchMint(uint256 term, uint256 count) external {
         require(tx.origin == msg.sender, "Error: Only EOA");
         require(count > 0 && term > 0, "Invalid Params");
@@ -39,7 +37,6 @@ contract XENFactory {
             bytes15(0x5af43d82803e903d91602b57fd5bf3)
         );
         uint256 startIndex = userMintIndex[msg.sender] + 1;
-        userMintIndex[msg.sender] += count;
         bytes memory data = abi.encodeWithSignature(
             "callClaimRank(uint256)",
             uint256(term)
@@ -64,25 +61,12 @@ contract XENFactory {
                 ++i;
             }
         }
+        userMintIndex[msg.sender] += count;
     }
 
-    /// @notice
-    /// @dev
-    /// @param ids The number of days to mint
-    /// @param term The number of proxy contract
     function batchReuseMint(uint256[] calldata ids, uint256 term) external {
         require(tx.origin == msg.sender, "Error: Only EOA");
         require(ids.length > 0 && term > 0, "Invalid Params");
-
-        bytes32 bytecodeHash = keccak256(
-            abi.encodePacked(
-                bytes.concat(
-                    bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
-                    bytes20(proxyImplementation),
-                    bytes15(0x5af43d82803e903d91602b57fd5bf3)
-                )
-            )
-        );
         for (uint256 i = 0; i < ids.length; ) {
             bytes32 salt = keccak256(abi.encodePacked(msg.sender, ids[i]));
             address proxy = address(
@@ -121,20 +105,8 @@ contract XENFactory {
         }
     }
 
-    /// @notice
-    /// @dev
-    /// @param ids The number of days to mint
     function batchClaim(uint256[] calldata ids) external {
         require(tx.origin == msg.sender, "Error: Only EOA");
-        bytes32 bytecodeHash = keccak256(
-            abi.encodePacked(
-                bytes.concat(
-                    bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
-                    bytes20(proxyImplementation),
-                    bytes15(0x5af43d82803e903d91602b57fd5bf3)
-                )
-            )
-        );
         for (uint256 i = 0; i < ids.length; ) {
             bytes32 salt = keccak256(abi.encodePacked(msg.sender, ids[i]));
             address proxy = address(
@@ -173,23 +145,9 @@ contract XENFactory {
         }
     }
 
-    /// @notice
-    /// @dev
-    /// @param ids The number of days to mint
-    /// @param term The number of proxy contract
     function batchClaimAndMint(uint256[] calldata ids, uint256 term) external {
         require(tx.origin == msg.sender, "Error: Only EOA");
         require(term > 0, "Invalid Params");
-
-        bytes32 bytecodeHash = keccak256(
-            abi.encodePacked(
-                bytes.concat(
-                    bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
-                    bytes20(proxyImplementation),
-                    bytes15(0x5af43d82803e903d91602b57fd5bf3)
-                )
-            )
-        );
         for (uint256 i = 0; i < ids.length; ) {
             bytes32 salt = keccak256(abi.encodePacked(msg.sender, ids[i]));
             address proxy = address(
@@ -242,21 +200,8 @@ contract XENFactory {
         }
     }
 
-    /// @notice
-    /// @dev
-    /// @param ids The number of days to mint
     function callKill(uint256[] calldata ids) external {
         require(tx.origin == msg.sender, "Error: Only EOA");
-
-        bytes32 bytecodeHash = keccak256(
-            abi.encodePacked(
-                bytes.concat(
-                    bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
-                    bytes20(proxyImplementation),
-                    bytes15(0x5af43d82803e903d91602b57fd5bf3)
-                )
-            )
-        );
         for (uint256 i = 0; i < ids.length; ) {
             bytes32 salt = keccak256(abi.encodePacked(msg.sender, ids[i]));
             address proxy = address(

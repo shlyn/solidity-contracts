@@ -9,11 +9,26 @@ import { DeployedContractAddress } from "../config"
  * Admin      || 40     || 0x9756B99BF162B8FD67092E39BEDE79F663260E44
  * proxies    || 41     || 0x39CBC7985fC8563C30eB98306B18Bdb96C5dB1bF
  */
+
 const deploy_XENFactory = async () => {
   const XENFactory = await ethers.getContractFactory("XENFactory");
+  const contract = await XENFactory.deploy()
+  console.log(`XENFactory be deployed to ${contract.address}`);
+  return contract.address;
+}
+
+const deploy_XENFactoryUpgradeable = async () => {
+  const XENFactory = await ethers.getContractFactory("XENFactoryUpgradeable");
   const contract = await upgrades.deployProxy(XENFactory)
   console.log(`XENFactory be deployed to ${contract.address}`);
   return contract.address;
+}
+
+const upgrade_XENFactory = async () => {
+  const proxies = "0xc3A2310328Fcd9Bc6D5c8AC3A97C2aC64bD3D9ab"
+  const XENFactory = await ethers.getContractFactory("XENFactory");
+  const factory = await upgrades.upgradeProxy(proxies, XENFactory);
+  console.log("XENFactory is upgrade to: ", factory.address);
 }
 
 const deploy_XENProxyImplementation = async (xenFactory: string, xenCrypto: string) => {
@@ -25,20 +40,13 @@ const deploy_XENProxyImplementation = async (xenFactory: string, xenCrypto: stri
   return contract.address;
 }
 
-const upgrade_XENFactory = async () => {
-  const proxies = "0x1AF8fD96EF4E6B64f42e97e34D5751e96a39192d"
-  const XENFactory = await ethers.getContractFactory("XENFactory");
-  const factory = await upgrades.upgradeProxy(proxies, XENFactory);
-  console.log("XENFactory is upgrade to: ", factory.address);
-}
-
 async function main() {
   // @One
-  // const xenFactory = await deploy_XENFactory()
+  const xenFactory = await deploy_XENFactory()
 
   // @Two
-  // const xenCrypto = DeployedContractAddress.goerli.XENCrypto
-  // await deploy_XENProxyImplementation(xenFactory, xenCrypto)
+  const xenCrypto = DeployedContractAddress.goerli.XENCrypto
+  await deploy_XENProxyImplementation(xenCrypto, xenFactory)
 
   // upgrade XENFactory
   // await upgrade_XENFactory()

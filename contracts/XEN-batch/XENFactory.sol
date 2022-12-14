@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "./interfaces/IXENProxy.sol";
 import "./interfaces/IXENCrypto.sol";
-// import "hardhat/console.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract XENProxyV1 {
+// import "hardhat/console.sol";
+
+contract XENProxyImplementation {
     address public immutable self = address(this);
     address public immutable xenCrypto;
     address public immutable factory;
@@ -35,28 +35,35 @@ contract XENProxyV1 {
 
 contract XENFactory is OwnableUpgradeable {
     bytes32 public bytecodeHash;
-    address public xenProxy;
+    address public proxyImplementation;
+
     mapping(address => uint256) public userMintIndex;
 
-    function initialize(address _xenProxy) external initializer {
-        xenProxy = _xenProxy;
+    function initialize() external initializer {
+        __Ownable_init();
+    }
+
+    function setFactory(address _proxyImplementation) external onlyOwner {
+        proxyImplementation = _proxyImplementation;
         bytecodeHash = keccak256(
             abi.encodePacked(
                 bytes.concat(
                     bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
-                    bytes20(_xenProxy),
+                    bytes20(_proxyImplementation),
                     bytes15(0x5af43d82803e903d91602b57fd5bf3)
                 )
             )
         );
     }
 
+    // batch create Proxy contract
+
     function batchMint(uint256 term, uint256 count) external {
         require(tx.origin == msg.sender, "Error: Only EOA");
         require(count > 0 && term > 0, "Invalid Params");
         bytes memory bytecode = bytes.concat(
             bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
-            bytes20(xenProxy),
+            bytes20(proxyImplementation),
             bytes15(0x5af43d82803e903d91602b57fd5bf3)
         );
         uint256 startIndex = userMintIndex[msg.sender] + 1;

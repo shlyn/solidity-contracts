@@ -16,8 +16,8 @@ const deploy_XENFactory = async () => {
   return contract.address;
 }
 
-const deploy_XENProxy = async (xenFactory: string, xenCrypto: string) => {
-  const Contract = await ethers.getContractFactory("XENProxy");
+const deploy_XENProxyImplementation = async (xenFactory: string, xenCrypto: string) => {
+  const Contract = await ethers.getContractFactory("XENProxyImplementation");
   const contract = await Contract.deploy(xenFactory, xenCrypto);
 
   await contract.deployed();
@@ -26,18 +26,19 @@ const deploy_XENProxy = async (xenFactory: string, xenCrypto: string) => {
 }
 
 const upgrade_XENFactory = async () => {
-  const proxies = "0x9756B99BF162B8FD67092E39BEDE79F663260E44"
-  const XENFactory = await ethers.getContractFactory("XENFactoryV2");
+  const proxies = "0x1AF8fD96EF4E6B64f42e97e34D5751e96a39192d"
+  const XENFactory = await ethers.getContractFactory("XENFactory");
   const factory = await upgrades.upgradeProxy(proxies, XENFactory);
   console.log("XENFactory is upgrade to: ", factory.address);
 }
 
 async function main() {
   // @One
-  const xenFactory = await deploy_XENFactory()
+  // const xenFactory = await deploy_XENFactory()
+
   // @Two
-  const xenCrypto = DeployedContractAddress.goerli.XENCrypto
-  await deploy_XENProxy(xenFactory, xenCrypto)
+  // const xenCrypto = DeployedContractAddress.goerli.XENCrypto
+  // await deploy_XENProxyImplementation(xenFactory, xenCrypto)
 
   // upgrade XENFactory
   // await upgrade_XENFactory()

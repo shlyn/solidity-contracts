@@ -9,27 +9,21 @@ import { DeployedContractAddress } from "../config"
  * Admin      || 40     || 0x9756B99BF162B8FD67092E39BEDE79F663260E44
  * proxies    || 41     || 0x39CBC7985fC8563C30eB98306B18Bdb96C5dB1bF
  */
+const deploy_XENFactory = async () => {
+  const XENFactory = await ethers.getContractFactory("XENFactory");
+  const contract = await upgrades.deployProxy(XENFactory)
+  console.log(`XENFactory be deployed to ${contract.address}`);
+  return contract.address;
+}
 
-const deploy_XENProxy = async () => {
-  const XENCrypto_ = DeployedContractAddress.goerli.XENCrypto
-  const proxies_ = "0xda2Bb2A910D86195b021B12451679EBEfb39e2c6"
+const deploy_XENProxy = async (xenFactory: string, xenCrypto: string) => {
   const Contract = await ethers.getContractFactory("XENProxy");
-  const contract = await Contract.deploy(proxies_, XENCrypto_);
+  const contract = await Contract.deploy(xenFactory, xenCrypto);
 
   await contract.deployed();
   console.log(`XENProxy be deployed to ${contract.address}`);
+  return contract.address;
 }
-
-const deploy_XENFactory = async () => {
-  const XENFactory = await ethers.getContractFactory("XENFactory");
-  // First check the contant XEN_PROXY = ?
-  // const contract = await upgrades.deployProxy(XENFactory)
-
-  const contract = await XENFactory.deploy()
-  await contract.deployed();
-  console.log(`XENFactory be deployed to ${contract.address}`);
-}
-
 
 const upgrade_XENFactory = async () => {
   const proxies = "0x9756B99BF162B8FD67092E39BEDE79F663260E44"
@@ -39,9 +33,11 @@ const upgrade_XENFactory = async () => {
 }
 
 async function main() {
-
-  await deploy_XENFactory()
-  await deploy_XENProxy()
+  // @One
+  const xenFactory = await deploy_XENFactory()
+  // @Two
+  const xenCrypto = DeployedContractAddress.goerli.XENCrypto
+  await deploy_XENProxy(xenFactory, xenCrypto)
 
   // upgrade XENFactory
   // await upgrade_XENFactory()

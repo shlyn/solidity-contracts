@@ -30,11 +30,6 @@ describe("XENFacroty", function () {
   }
 
   describe("铸造功能", function () {
-    it("批量铸造gas消耗", async function () {
-      const { xenFactory, wallet0 } = await loadFixture(deployTargetContract);
-      await xenFactory.connect(wallet0).batchMint(1, 100);
-    });
-
     it("单个铸造", async function () {
       const { xenCrypto, xenFactory, xenProxy, wallet1, wallet2 } = await loadFixture(deployTargetContract);
 

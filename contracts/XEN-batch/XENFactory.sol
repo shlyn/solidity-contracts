@@ -15,66 +15,88 @@ contract XENFactory {
         owner = tx.origin;
     }
 
-    receive() external payable {}
-
     /// @dev set proxy implementation contact address
     /// @param _proxyImplementation The address of XENProxyImplementation
-    function setFactory(address _proxyImplementation) external {
+    function setProxyImplementation(address _proxyImplementation) external {
         require(owner == msg.sender, "noauthority");
         proxyImplementation = _proxyImplementation;
     }
 
-    // batch create Proxy contract
-
     /// @notice
     /// @dev
-    /// @param term The number of days to mint
-    /// @param count The number of proxy contract
-    function batchMint(uint256 term, uint256 count) external {
-        require(tx.origin == msg.sender, "Error: Only EOA");
-        require(count > 0 && term > 0, "Invalid Params");
+    /// @param count The amount of proxy contract
+    function batchCreateProxy(uint256 count) external {
+        require(tx.origin == msg.sender);
         bytes memory bytecode = bytes.concat(
             bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
             bytes20(proxyImplementation),
             bytes15(0x5af43d82803e903d91602b57fd5bf3)
         );
-        uint256 startIndex = userMintIndex[msg.sender] + 1;
-        userMintIndex[msg.sender] += count;
-        bytes memory data = abi.encodeWithSignature(
-            "callClaimRank(uint256)",
-            uint256(term)
-        );
-        address proxy;
-        for (uint256 i = startIndex; i < startIndex + count; ) {
+        uint256 index = userMintIndex[msg.sender] + 1;
+        for (uint256 i = index; i < index + count;) {
             bytes32 salt = keccak256(abi.encodePacked(msg.sender, i));
             assembly {
-                proxy := create2(0, add(bytecode, 32), mload(bytecode), salt)
-                // solhint-disable-next-line
-                let succeeded := call(
-                    gas(),
-                    proxy,
-                    0,
-                    add(data, 0x20),
-                    mload(data),
-                    0,
-                    0
-                )
+                let proxy := create2(0, add(bytecode, 32), mload(bytecode), salt)
             }
             unchecked {
                 ++i;
             }
         }
+        userMintIndex[msg.sender] += count;
+    }
+    
+
+    /// @notice
+    /// @dev batchMint
+    /// @param term uint256
+    /// @param count uint256
+    function batchMint(uint256 term, uint256 count) external {
+        require(tx.origin == msg.sender);
+        bytes memory bytecode = bytes.concat(
+            bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
+            bytes20(proxyImplementation),
+            bytes15(0x5af43d82803e903d91602b57fd5bf3)
+        );
+        bytes memory data = abi.encodeWithSignature("callClaimRank(uint256)", term);
+        uint256 index = userMintIndex[msg.sender] + 1;
+        for (uint256 i = index; i < index + count;) {
+            bytes32 salt = keccak256(abi.encodePacked(msg.sender, i));
+            assembly {
+                let proxy := create2(0, add(bytecode, 32), mload(bytecode), salt)
+                // solhint-disable-next-line
+                let succeeded := call(gas(), proxy, 0, add(data, 0x20), mload(data), 0, 0)
+            }
+            unchecked {
+                ++i;
+            }
+        }
+        userMintIndex[msg.sender] += count;
     }
 
     /// @notice
-    /// @dev
-    /// @param ids The number of days to mint
-    /// @param term The number of proxy contract
+    /// @dev batchClaim
+    /// @param ids uint256[]
+    function batchClaim(uint256[] calldata ids) external {
+        require(tx.origin == msg.sender);
+        bytes32 _bytecodeHash = keccak256(abi.encodePacked(bytes.concat(bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73), bytes20(proxyImplementation), bytes15(0x5af43d82803e903d91602b57fd5bf3))));
+        for (uint256 i = 0; i < ids.length;) {
+            bytes32 salt = keccak256(abi.encodePacked(msg.sender, ids[i]));
+            address proxy = address(uint160(uint(keccak256(abi.encodePacked( hex"ff", address(this), salt, _bytecodeHash)))));
+            bytes memory data = abi.encodeWithSignature("callClaimMintRewardAndShare(address)", msg.sender);
+            assembly {
+                // solhint-disable-next-line
+                let succeeded := call(gas(), proxy, 0, add(data, 0x20), mload(data), 0, 0)
+            }
+            unchecked {
+                i++;
+            }
+        }
+    }
+
     function batchReuseMint(uint256[] calldata ids, uint256 term) external {
         require(tx.origin == msg.sender, "Error: Only EOA");
         require(ids.length > 0 && term > 0, "Invalid Params");
-
-        bytes32 bytecodeHash = keccak256(
+        bytes32 _bytecodeHash = keccak256(
             abi.encodePacked(
                 bytes.concat(
                     bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
@@ -85,35 +107,11 @@ contract XENFactory {
         );
         for (uint256 i = 0; i < ids.length; ) {
             bytes32 salt = keccak256(abi.encodePacked(msg.sender, ids[i]));
-            address proxy = address(
-                uint160(
-                    uint(
-                        keccak256(
-                            abi.encodePacked(
-                                hex"ff",
-                                address(this),
-                                salt,
-                                bytecodeHash
-                            )
-                        )
-                    )
-                )
-            );
-            bytes memory data = abi.encodeWithSignature(
-                "callClaimRank(uint256)",
-                uint256(term)
-            );
+            address proxy = address(uint160(uint(keccak256(abi.encodePacked(hex"ff", address(this), salt, _bytecodeHash)))));
+            bytes memory data = abi.encodeWithSignature("callClaimRank(uint256)", uint256(term));
             assembly {
                 // solhint-disable-next-line
-                let succeeded := call(
-                    gas(),
-                    proxy,
-                    0,
-                    add(data, 0x20),
-                    mload(data),
-                    0,
-                    0
-                )
+                let succeeded := call(gas(), proxy, 0, add(data, 0x20), mload(data), 0, 0)
             }
             unchecked {
                 i++;
@@ -122,119 +120,22 @@ contract XENFactory {
     }
 
     /// @notice
-    /// @dev
-    /// @param ids The number of days to mint
-    function batchClaim(uint256[] calldata ids) external {
-        require(tx.origin == msg.sender, "Error: Only EOA");
-        bytes32 bytecodeHash = keccak256(
-            abi.encodePacked(
-                bytes.concat(
-                    bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
-                    bytes20(proxyImplementation),
-                    bytes15(0x5af43d82803e903d91602b57fd5bf3)
-                )
-            )
-        );
-        for (uint256 i = 0; i < ids.length; ) {
-            bytes32 salt = keccak256(abi.encodePacked(msg.sender, ids[i]));
-            address proxy = address(
-                uint160(
-                    uint(
-                        keccak256(
-                            abi.encodePacked(
-                                hex"ff",
-                                address(this),
-                                salt,
-                                bytecodeHash
-                            )
-                        )
-                    )
-                )
-            );
-            bytes memory data = abi.encodeWithSignature(
-                "callClaimMintRewardAndShare(address)",
-                msg.sender
-            );
-            assembly {
-                // solhint-disable-next-line
-                let succeeded := call(
-                    gas(),
-                    proxy,
-                    0,
-                    add(data, 0x20),
-                    mload(data),
-                    0,
-                    0
-                )
-            }
-            unchecked {
-                i++;
-            }
-        }
-    }
-
-    /// @notice
-    /// @dev
-    /// @param ids The number of days to mint
-    /// @param term The number of proxy contract
+    /// @dev batchClaimAndMint
+    /// @param ids uint256[]
+    /// @param term uint256
     function batchClaimAndMint(uint256[] calldata ids, uint256 term) external {
-        require(tx.origin == msg.sender, "Error: Only EOA");
-        require(term > 0, "Invalid Params");
-
-        bytes32 bytecodeHash = keccak256(
-            abi.encodePacked(
-                bytes.concat(
-                    bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
-                    bytes20(proxyImplementation),
-                    bytes15(0x5af43d82803e903d91602b57fd5bf3)
-                )
-            )
-        );
+        require(tx.origin == msg.sender);
+        bytes32 _bytecodeHash = keccak256(abi.encodePacked(bytes.concat(bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73), bytes20(proxyImplementation), bytes15(0x5af43d82803e903d91602b57fd5bf3))));
         for (uint256 i = 0; i < ids.length; ) {
             bytes32 salt = keccak256(abi.encodePacked(msg.sender, ids[i]));
-            address proxy = address(
-                uint160(
-                    uint(
-                        keccak256(
-                            abi.encodePacked(
-                                hex"ff",
-                                address(this),
-                                salt,
-                                bytecodeHash
-                            )
-                        )
-                    )
-                )
-            );
-            bytes memory claimData = abi.encodeWithSignature(
-                "callClaimMintRewardAndShare(address)",
-                msg.sender
-            );
-            bytes memory mintData = abi.encodeWithSignature(
-                "callClaimRank(uint256)",
-                uint256(term)
-            );
+            address proxy = address(uint160(uint(keccak256(abi.encodePacked(hex"ff", address(this), salt, _bytecodeHash)))));
+            bytes memory claimData = abi.encodeWithSignature("callClaimMintRewardAndShare(address)", msg.sender);
+            bytes memory mintData = abi.encodeWithSignature("callClaimRank(uint256)", uint256(term));
             assembly {
                 // solhint-disable-next-line
-                let claimRes := call(
-                    gas(),
-                    proxy,
-                    0,
-                    add(claimData, 0x20),
-                    mload(claimData),
-                    0,
-                    0
-                )
+                let claimRes := call(gas(), proxy, 0, add(claimData, 0x20), mload(claimData), 0, 0)
                 // solhint-disable-next-line
-                let mintRes := call(
-                    gas(),
-                    proxy,
-                    0,
-                    add(mintData, 0x20),
-                    mload(mintData),
-                    0,
-                    0
-                )
+                let mintRes := call(gas(), proxy, 0, add(mintData, 0x20), mload(mintData), 0, 0)
             }
             unchecked {
                 i++;
@@ -243,51 +144,18 @@ contract XENFactory {
     }
 
     /// @notice
-    /// @dev
-    /// @param ids The number of days to mint
+    /// @dev callKill
+    /// @param ids The number of proxy contract
     function callKill(uint256[] calldata ids) external {
-        require(tx.origin == msg.sender, "Error: Only EOA");
-
-        bytes32 bytecodeHash = keccak256(
-            abi.encodePacked(
-                bytes.concat(
-                    bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73),
-                    bytes20(proxyImplementation),
-                    bytes15(0x5af43d82803e903d91602b57fd5bf3)
-                )
-            )
-        );
+        require(tx.origin == msg.sender);
+        bytes32 _bytecodeHash = keccak256(abi.encodePacked(bytes.concat(bytes20(0x3D602d80600A3D3981F3363d3d373d3D3D363d73), bytes20(proxyImplementation), bytes15(0x5af43d82803e903d91602b57fd5bf3))));
         for (uint256 i = 0; i < ids.length; ) {
             bytes32 salt = keccak256(abi.encodePacked(msg.sender, ids[i]));
-            address proxy = address(
-                uint160(
-                    uint(
-                        keccak256(
-                            abi.encodePacked(
-                                hex"ff",
-                                address(this),
-                                salt,
-                                bytecodeHash
-                            )
-                        )
-                    )
-                )
-            );
-            bytes memory data = abi.encodeWithSignature(
-                "destroy(address)",
-                msg.sender
-            );
+            address proxy = address(uint160(uint(keccak256(abi.encodePacked(hex"ff", address(this), salt, _bytecodeHash)))));
+            bytes memory data = abi.encodeWithSignature("destroy(address)", msg.sender);
             assembly {
                 // solhint-disable-next-line
-                let Res := call(
-                    gas(),
-                    proxy,
-                    0,
-                    add(data, 0x20),
-                    mload(data),
-                    0,
-                    0
-                )
+                let Res := call(gas(), proxy, 0, add(data, 0x20), mload(data), 0, 0)
             }
             unchecked {
                 i++;

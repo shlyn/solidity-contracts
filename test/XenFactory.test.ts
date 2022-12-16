@@ -6,9 +6,11 @@ import { getCreate2ContractAddress } from "../utils";
 describe("XENFacroty", function () {
   async function deployTargetContract() {
     const [wallet0, wallet1, wallet2, wallet3, wallet4, wallet5, wallet6, wallet7] = await ethers.getSigners();
+
     // Math
     const Math = await ethers.getContractFactory("./contracts/XEN-crypto/Math.sol:Math");
     const math = await Math.deploy();
+
     // XEN-crypto
     const XENCrypto = await ethers.getContractFactory("XENCryptoTest", {
       libraries: {
@@ -20,11 +22,12 @@ describe("XENFacroty", function () {
     // XENFactory
     const XENFacroty = await ethers.getContractFactory("XENFactory");
     const xenFactory = await XENFacroty.deploy();
+
     // XENProxy
-    const XENProxy = await ethers.getContractFactory("XENProxyV1");
+    const XENProxy = await ethers.getContractFactory("XENProxyImplementation");
     const xenProxy = await XENProxy.deploy(xenCrypto.address, xenFactory.address);
 
-    await xenFactory.connect(wallet0).initialize(xenProxy.address);
+    await xenFactory.connect(wallet0).setProxyImplementation(xenProxy.address);
 
     return { xenCrypto, xenFactory, xenProxy, wallet0, wallet1, wallet2, wallet3, wallet4, wallet5, wallet6, wallet7 }
   }
@@ -77,7 +80,7 @@ describe("XENFacroty", function () {
 
       const XENFacroty2 = await ethers.getContractFactory("XENFactory");
       const xenFactory2 = await XENFacroty2.connect(wallet2).deploy();
-      await xenFactory2.connect(wallet2).initialize(xenProxy.address);
+      await xenFactory2.connect(wallet2).setProxyImplementation(xenProxy.address);
 
       const res2 = await xenFactory2.connect(wallet2).batchMint(1, 1);
       await res2.wait();

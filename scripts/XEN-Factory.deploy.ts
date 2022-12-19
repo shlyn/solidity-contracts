@@ -58,7 +58,7 @@ async function main() {
   // await deploy_XENProxyImplementation(xenCrypto, xenFactory)
 
   // upgrade XENFactory
-  await upgrade_XENFactory()
+  // await upgrade_XENFactory()
 }
 
 main().catch((error) => {

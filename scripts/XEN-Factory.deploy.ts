@@ -25,7 +25,7 @@ const deploy_XENFactoryUpgradeable = async () => {
 }
 
 const upgrade_XENFactory = async () => {
-  const proxies = "0x5ED725EA0622009E0852938978Fe5109Eb2Ede65"
+  const proxies = "0xDfec2d9c03d713f25C88494404510389B17C1BCC"
   const XENFactory = await ethers.getContractFactory("XENFactoryUpgradeable");
   // validate
   // await upgrades.validateUpgrade(proxies, XENFactory);
@@ -58,7 +58,7 @@ async function main() {
   // await deploy_XENProxyImplementation(xenCrypto, xenFactory)
 
   // upgrade XENFactory
-  // await upgrade_XENFactory()
+  await upgrade_XENFactory()
 }
 
 main().catch((error) => {

@@ -85,7 +85,7 @@ contract XENFactoryUpgradeable is OwnableUpgradeable {
                 let succeeded := call(gas(), proxy, 0, add(data, 0x20), mload(data), 0, 0)
             }
             unchecked {
-                ++i;
+                i++;
             }
         }
         userMintIndex[msg.sender] += count;
@@ -107,7 +107,7 @@ contract XENFactoryUpgradeable is OwnableUpgradeable {
                 let succeeded := call(gas(), proxy, 0, add(data, 0x20), mload(data), 0, 0)
             }
             unchecked {
-                ++i;
+                i++;
             }
         }
     }
@@ -137,7 +137,7 @@ contract XENFactoryUpgradeable is OwnableUpgradeable {
                 let succeeded := call(gas(), proxy, 0, add(data, 0x20), mload(data), 0, 0)
             }
             unchecked {
-                ++i;
+                i++;
             }
         }
     }
@@ -162,7 +162,7 @@ contract XENFactoryUpgradeable is OwnableUpgradeable {
                 let minted := call(gas(), proxy, 0, add(mintData, 0x20), mload(mintData), 0, 0)
             }
             unchecked {
-                ++i;
+                i++;
             }
         }
     }
@@ -182,7 +182,7 @@ contract XENFactoryUpgradeable is OwnableUpgradeable {
                 let killed := call(gas(), proxy, 0, add(data, 0x20), mload(data), 0, 0)
             }
             unchecked {
-                ++i;
+                i++;
             }
         }
     }
